@@ -1,0 +1,62 @@
+module t_flip_flop_(
+    input clk,rst,
+    input T,
+    output reg Q,Qbar
+    );
+    
+    always @(posedge clk)begin
+        if(!rst)
+            Q<=0;
+        else begin
+            if(T)
+                Q<=~Q;//toggle
+            else 
+                Q<=Q;//hold
+        end 
+    end  
+endmodule
+
+
+module sync_3bit(
+    input clk,rst,
+    output [2:0]Q
+);
+    
+    wire T0,T1,T2;
+    
+    assign T0=1'b1;
+    assign T1=Q[0];
+    assign T2=Q[0] & Q[1];
+    
+    
+    t_flip_flop_ uut1(.clk(clk),.rst(rst),.T(T0),.Q(Q[0]));
+    t_flip_flop_ uut2(.clk(clk),.rst(rst),.T(T2),.Q(Q[1]));
+    t_flip_flop_ uut3(.clk(clk),.rst(rst),.T(T3),.Q(Q[2]));
+    
+        
+endmodule 
+
+
+module tb_sync_3bit;
+    reg clk,rst;
+    wire Q;
+    
+
+    
+    initial begin
+        clk=0;
+        forever #5 clk=~clk;
+    end 
+    
+    sync_3bit uut(.clk(clk),.rst(rst),.Q(Q));
+    
+    initial begin
+        $display("time\t Q");
+        $monitor("Time: %0t | Count = %H", $time, Q);
+        rst=0;#10;
+        rst=1;#200;
+        
+        $finish;
+        end 
+
+endmodule 
