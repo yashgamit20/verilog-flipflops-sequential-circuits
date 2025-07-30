@@ -1,0 +1,53 @@
+`timescale 1ns / 1ps
+
+
+module T_flip_flop(
+    input clk,rst,
+    input T,
+    output reg Q,Qbar
+    );
+    
+    always @(posedge clk)begin
+        if(rst)
+            Q<=0;
+        else begin
+            if(T)
+                Q<=~Q;//toggle
+            else 
+                Q<=Q;//hold
+        end 
+    end  
+endmodule
+
+
+module tb_T_flip_flop;
+    reg clk,rst;
+    reg T;
+    wire Q,Qbar;
+    
+    initial  begin   
+        clk=0;
+        forever #5 clk=~clk;
+    end 
+    
+    T_flip_flop dut(.clk(clk),.rst(rst),.T(T),.Q(Q),.Qbar(Qbar));
+    
+    initial begin
+    $display("time\t T Q Qbar");
+    $monitor("%0t\t %d\t %d\t %d\t  ",$time,T,Q,Qbar);
+    
+    clk=0;rst=0;#10;
+    clk=1;rst=1;#10;
+    
+    T=0;#10;
+    T=1;#10;
+    T=0;#10;
+    T=1;#10;
+    T=0;#10;
+    
+    #10;
+    
+    $finish;
+    end 
+    
+ endmodule    
