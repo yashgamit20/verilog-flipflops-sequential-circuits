@@ -1,0 +1,65 @@
+`timescale 1ns / 1ps
+
+
+module fsm_from_boolean_exp(
+    input wire clk,rst,X,
+    
+    output reg  Qa,Qb,
+    output wire Qa_bar,Qb_bar,
+    output wire Z
+    
+    );
+    //Boolean ecpression 
+    assign Da=(~Qa)& Qb & X;
+    assign Db= (~Qb) & (~X);
+    assign Z = Qa & (~Qb) & (~X);  
+    
+    //D-block logic  
+    always @(posedge clk)begin
+        if(!rst)begin
+            Qa<=0;
+            Qb<=0;
+            
+            
+        end 
+        else begin
+            Qa<=Da;
+            Qb<=Db;
+            
+        end 
+    end 
+    
+    //~ logic         
+    assign Qa_bar=~Qa;
+    assign Qb_bar=~Qb;       
+      
+endmodule
+
+
+module tb_fsm_from_boolean_exp;
+
+    reg clk,rst,X;
+    wire Qa,Qb,Qa_bar,Qb_bar,Z;
+    
+    initial begin
+        clk=0;
+        forever  #5 clk=~clk;
+    end 
+    
+    fsm_from_boolean_exp uut(.clk(clk),.rst(rst),.X(X),.Qa(Qa),.Qb(Qb),.Qa_bar(Qa_bar),.Qb_bar(Qb_bar),.Z(Z));
+    
+    initial begin
+      rst=0;#10;
+      rst=1;#10; 
+      
+            #10 X = 0;
+            #10  X = 1;
+            #10  X = 0;  // Z should go high here
+            #10  X = 1;
+            #10 X = 1;
+            #10  X = 0;
+            #10 ; 
+    end 
+    
+    
+endmodule 
