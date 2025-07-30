@@ -1,0 +1,55 @@
+// D flop flop 
+
+`timescale 1ns / 1ps
+
+
+
+module d_flip_flop(
+    input rst,clk,D,
+    output reg Q,Qbar
+    );
+    
+    always @(posedge clk)begin
+        if(!rst)begin
+            Q<=1'b0;
+            Qbar<=1'b1;
+        end 
+        else begin 
+            Q<=D;
+            Qbar<=~D;
+        end
+    end 
+endmodule
+
+
+module testbench_d_flip_flop;
+    reg clk;
+    reg rst;
+    reg D;
+    wire Q,Qbar;
+    reg rst,D;
+    
+    initial begin
+        clk=0;
+        forever #5 clk=~clk;
+    end 
+    
+    d_flip_flop dut(.clk(clk),.rst(rst),.D(D),.Q(Q),.Qbar(Qbar));
+    
+    initial begin
+        $display("time\t clk\t rst\t D\t Q\t Qbar\t");
+        $monitor("%0t\t %d\t %d\t %d\t %d\t %d\t",$time,clk,rst,D,Q,Qbar);
+        
+        rst=0;clk=0;D=0;#10;
+        rst=1;clk=1;#10;
+        D=0;#10;
+        D=1;#10;
+        D=0;#10;
+        D=1;#10;
+        #100;
+        
+        $finish;
+        end 
+
+endmodule 
+
